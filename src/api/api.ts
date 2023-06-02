@@ -10,7 +10,7 @@ type SymbolsResponse = {
   success: boolean;
   symbols: Symbols;
 };
-type getSymbolsResult = {
+export type GetSymbolsResult = {
   success: boolean;
   timestamp: number;
   symbols: Symbols;
@@ -20,16 +20,15 @@ type getSymbolsResult = {
  * This is an asynchronous function that retrieves symbols data from an API and returns a Promise with
  * the result.
  * @returns The function `getSymbols` is returning a Promise that resolves to an object of type
- * `getSymbolsResult`. This object has three properties: `success` (a boolean indicating whether the
+ * `GetSymbolsResult`. This object has three properties: `success` (a boolean indicating whether the
  * API call was successful), `timestamp` (a number representing the current time), and `symbols` (an
  * object containing information about currency symbols). If the API call fails, the `success` property
  * will be `
  */
-export const getSymbols = async (): Promise<getSymbolsResult> => {
+export const getSymbols = async (): Promise<GetSymbolsResult> => {
   try {
     let response = await fetch(`${BASE_URL}/symbols?access_key=${API_KEY}`);
     let json: SymbolsResponse = await response.json();
-    console.log(json);
     return {
       success: json.success,
       timestamp: new Date().getTime(),
@@ -48,7 +47,7 @@ export const getSymbols = async (): Promise<getSymbolsResult> => {
 type Rates = {
   [x: string]: number;
 };
-type RatesResponse = {
+export type RatesResponse = {
   success: boolean;
   timestamp: number;
   base: string;
@@ -79,7 +78,6 @@ export const getRates = async (
     );
     let json: RatesResponse = await response.json();
     json.timestamp *= 1000;
-    console.log(json);
     return json;
   } catch (error) {
     console.log('getRatesResponse error', error);
