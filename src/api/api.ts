@@ -3,7 +3,7 @@ const API_KEY = 'db8423abf221064f5510359bb6c10120';
 // const BASE_URL = 'http://10.0.2.2:3000';
 const BASE_URL = 'http://127.0.0.1:3000';
 
-type Symbols = {
+export type Symbols = {
   [x: string]: string;
 };
 type SymbolsResponse = {
@@ -44,7 +44,7 @@ export const getSymbols = async (): Promise<GetSymbolsResult> => {
   }
 };
 
-type Rates = {
+export type Rates = {
   [x: string]: number;
 };
 export type RatesResponse = {
