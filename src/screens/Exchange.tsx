@@ -1,7 +1,6 @@
 import {Button, StyleSheet, Text, TextInput, View} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {SelectList} from 'react-native-dropdown-select-list';
 
 import {
   GetSymbolsResult,
@@ -15,21 +14,25 @@ import {
   MAX_TIMESTAMP_UPDATE_SYMBOLS,
 } from '../consts';
 import {Rates} from '../api/api';
+import Dropdown from '../components/Dropdown';
 
 const Separator = () => <View style={styles.separator} />;
 
-type KeyValue = Array<{}>;
+type KeyValue = {key: string; value: string};
+type ArrayKeyValue = Array<KeyValue>;
 
 const Exchange = () => {
   const [amount, setAmount] = useState('1');
   const [result, setResult] = useState('');
 
-  const [selectedFrom, setSelectedFrom] = useState('');
-  const [selectedTo, setSelectedTo] = useState('');
-  const [data, setData] = useState<KeyValue>([]);
+  const [selectedFrom, setSelectedFrom] = useState<KeyValue | undefined>(
+    undefined,
+  );
+  const [selectedTo, setSelectedTo] = useState<KeyValue | undefined>(undefined);
+  const [data, setData] = useState<ArrayKeyValue>([]);
 
   const fillItems = (symbols: Symbols) => {
-    const items: KeyValue = [];
+    const items: ArrayKeyValue = [];
     for (const [key, value] of Object.entries(symbols)) {
       items.push({key, value});
     }
@@ -96,15 +99,19 @@ const Exchange = () => {
   }, [loadSymbols]);
 
   const convert = async () => {
-    if (selectedFrom !== null && selectedTo !== null) {
+    if (
+      selectedFrom?.key !== '' &&
+      selectedFrom?.value &&
+      selectedTo?.key !== ''
+    ) {
       const rates = await loadRates(
-        selectedFrom,
+        selectedFrom.key,
         'AED,AFN,ALL,AMD,ANG,AOA,ARS,AUD,AWG,AZN,BAM,BBD,BDT,BGN,BHD,BIF,BMD,BND,BOB,BRL,BSD,BTC,BTN,BWP,BYN,BYR,BZD,CAD,CDF,CHF,CLF,CLP,CNY,COP,CRC,CUC,CUP,CVE,CZK,DJF,DKK,DOP,DZD,EGP,ERN,ETB,FJD,FKP,GBP,GEL,GGP,GHS,GIP,GMD,GNF,GTQ,GYD,HKD,HNL,HRK,HTG,HUF,IDR,ILS,IMP,INR,IQD,IRR,ISK,JEP,JMD,JOD,JPY,KES,KGS,KHR,KMF,KPW,KRW,KWD,KYD,KZT,LAK,LBP,LKR,LRD,LSL,LTL,LVL,LYD,MAD,MDL,MGA,MKD,MMK,MNT,MOP,MRO,MUR,MVR,MWK,MXN,MYR,MZN,NAD,NGN,NIO,NOK,NPR,NZD,OMR,PAB,PEN,PGK,PHP,PKR,PLN,PYG,QAR,RON,RSD,RUB,RWF,SAR,SBD,SCR,SDG,SEK,SGD,SHP,SLE,SLL,SOS,SRD,STD,SVC,SYP,SZL,THB,TJS,TMT,TND,TOP,TRY,TTD,TWD,TZS,UAH,UGX,USD,UYU,UZS,VEF,VES,VND,VUV,WST,XAF,XAG,XAU,XCD,XDR,XOF,XPF,YER,ZAR,ZMK,ZMW,ZWL',
       );
       for (const [key, value] of Object.entries(rates)) {
-        if (key === selectedTo) {
+        if (key === selectedTo?.key) {
           const res = (value * parseFloat(amount)).toFixed(2);
-          const label = `${amount} ${selectedFrom} is equivalent to ${res} ${selectedTo}`;
+          const label = `${amount} ${selectedFrom.value} is equivalent to ${res} ${selectedTo.value}`;
           setResult(label);
           return;
         }
@@ -126,20 +133,12 @@ const Exchange = () => {
       <View style={styles.row}>
         <View style={styles.column}>
           <Text style={styles.label}>From:</Text>
-          <SelectList
-            setSelected={(val: string) => setSelectedFrom(val)}
-            data={data}
-            save="key"
-          />
+          <Dropdown label="Select one" data={data} onSelect={setSelectedFrom} />
         </View>
 
         <View style={[styles.column]}>
           <Text style={styles.label}>To:</Text>
-          <SelectList
-            setSelected={(val: string) => setSelectedTo(val)}
-            data={data}
-            save="key"
-          />
+          <Dropdown label="Select one" data={data} onSelect={setSelectedTo} />
         </View>
       </View>
       <Separator />
@@ -148,8 +147,8 @@ const Exchange = () => {
         title="Convert"
         onPress={convert}
         disabled={
-          selectedFrom === '' ||
-          selectedTo === '' ||
+          selectedFrom?.key === '' ||
+          selectedTo?.key === '' ||
           selectedFrom === selectedTo
         }
       />
