@@ -54,6 +54,12 @@ export type RatesResponse = {
   date: string;
   rates: Rates;
 };
+export type RateErrorResponse = {
+  error: {
+    code: string;
+    message: string;
+  };
+};
 
 /**
  * This is a TypeScript function that fetches exchange rates data from an API and returns it as a
@@ -71,7 +77,7 @@ export type RatesResponse = {
 export const getRates = async (
   base: string,
   symbols: string,
-): Promise<RatesResponse> => {
+): Promise<RatesResponse | RateErrorResponse> => {
   try {
     let response = await fetch(
       `${BASE_URL}/latest?access_key=${API_KEY}&base=${base}&symbols=${symbols}`,

@@ -78,14 +78,19 @@ const Exchange = () => {
           }
         }
         const newRates = await getRates(base, symbols);
-        await AsyncStorage.setItem(
-          `@${base}`,
-          JSON.stringify({
-            timestamp: newRates.timestamp,
-            rates: newRates.rates,
-          }),
-        );
-        return newRates.rates;
+        if ('error' in newRates) {
+          setResult(newRates.error.message);
+          return {};
+        } else {
+          await AsyncStorage.setItem(
+            `@${base}`,
+            JSON.stringify({
+              timestamp: newRates.timestamp,
+              rates: newRates.rates,
+            }),
+          );
+          return newRates.rates;
+        }
       } catch (e) {
         console.log('loadRates error: ' + e);
         return {};
@@ -104,22 +109,29 @@ const Exchange = () => {
       selectedFrom?.value &&
       selectedTo?.key !== ''
     ) {
-      const rates = await loadRates(
-        selectedFrom.key,
-        'AED,AFN,ALL,AMD,ANG,AOA,ARS,AUD,AWG,AZN,BAM,BBD,BDT,BGN,BHD,BIF,BMD,BND,BOB,BRL,BSD,BTC,BTN,BWP,BYN,BYR,BZD,CAD,CDF,CHF,CLF,CLP,CNY,COP,CRC,CUC,CUP,CVE,CZK,DJF,DKK,DOP,DZD,EGP,ERN,ETB,FJD,FKP,GBP,GEL,GGP,GHS,GIP,GMD,GNF,GTQ,GYD,HKD,HNL,HRK,HTG,HUF,IDR,ILS,IMP,INR,IQD,IRR,ISK,JEP,JMD,JOD,JPY,KES,KGS,KHR,KMF,KPW,KRW,KWD,KYD,KZT,LAK,LBP,LKR,LRD,LSL,LTL,LVL,LYD,MAD,MDL,MGA,MKD,MMK,MNT,MOP,MRO,MUR,MVR,MWK,MXN,MYR,MZN,NAD,NGN,NIO,NOK,NPR,NZD,OMR,PAB,PEN,PGK,PHP,PKR,PLN,PYG,QAR,RON,RSD,RUB,RWF,SAR,SBD,SCR,SDG,SEK,SGD,SHP,SLE,SLL,SOS,SRD,STD,SVC,SYP,SZL,THB,TJS,TMT,TND,TOP,TRY,TTD,TWD,TZS,UAH,UGX,USD,UYU,UZS,VEF,VES,VND,VUV,WST,XAF,XAG,XAU,XCD,XDR,XOF,XPF,YER,ZAR,ZMK,ZMW,ZWL',
-      );
-      for (const [key, value] of Object.entries(rates)) {
-        if (key === selectedTo?.key) {
-          const res = (value * parseFloat(amount)).toFixed(2);
-          const label = `${amount} ${selectedFrom.value} is equivalent to ${res} ${selectedTo.value}`;
-          setResult(label);
-          return;
+      try {
+        const rates = await loadRates(
+          selectedFrom.key,
+          'AED,AFN,ALL,AMD,ANG,AOA,ARS,AUD,AWG,AZN,BAM,BBD,BDT,BGN,BHD,BIF,BMD,BND,BOB,BRL,BSD,BTC,BTN,BWP,BYN,BYR,BZD,CAD,CDF,CHF,CLF,CLP,CNY,COP,CRC,CUC,CUP,CVE,CZK,DJF,DKK,DOP,DZD,EGP,ERN,ETB,FJD,FKP,GBP,GEL,GGP,GHS,GIP,GMD,GNF,GTQ,GYD,HKD,HNL,HRK,HTG,HUF,IDR,ILS,IMP,INR,IQD,IRR,ISK,JEP,JMD,JOD,JPY,KES,KGS,KHR,KMF,KPW,KRW,KWD,KYD,KZT,LAK,LBP,LKR,LRD,LSL,LTL,LVL,LYD,MAD,MDL,MGA,MKD,MMK,MNT,MOP,MRO,MUR,MVR,MWK,MXN,MYR,MZN,NAD,NGN,NIO,NOK,NPR,NZD,OMR,PAB,PEN,PGK,PHP,PKR,PLN,PYG,QAR,RON,RSD,RUB,RWF,SAR,SBD,SCR,SDG,SEK,SGD,SHP,SLE,SLL,SOS,SRD,STD,SVC,SYP,SZL,THB,TJS,TMT,TND,TOP,TRY,TTD,TWD,TZS,UAH,UGX,USD,UYU,UZS,VEF,VES,VND,VUV,WST,XAF,XAG,XAU,XCD,XDR,XOF,XPF,YER,ZAR,ZMK,ZMW,ZWL',
+        );
+        if (Object.entries(rates).length > 0) {
+          for (const [key, value] of Object.entries(rates)) {
+            if (key === selectedTo?.key) {
+              const res = (value * parseFloat(amount)).toFixed(2);
+              const label = `${amount} ${selectedFrom.value} is equivalent to ${res} ${selectedTo.value}`;
+              setResult(label);
+              return;
+            }
+          }
+          setResult('Not found');
         }
+      } catch (err) {
+        console.log(err);
       }
-      setResult('Not found');
     }
   };
-
+  console.log(selectedFrom);
+  console.log(selectedTo);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Exchange</Text>
@@ -147,9 +159,9 @@ const Exchange = () => {
         title="Convert"
         onPress={convert}
         disabled={
-          selectedFrom?.key === '' ||
-          selectedTo?.key === '' ||
-          selectedFrom === selectedTo
+          selectedFrom === undefined ||
+          selectedTo === undefined ||
+          selectedFrom.key === selectedTo.key
         }
       />
 
