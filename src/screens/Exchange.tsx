@@ -130,8 +130,7 @@ const Exchange = () => {
       }
     }
   };
-  console.log(selectedFrom);
-  console.log(selectedTo);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Exchange</Text>
@@ -145,12 +144,16 @@ const Exchange = () => {
       <View style={styles.row}>
         <View style={styles.column}>
           <Text style={styles.label}>From:</Text>
-          <Dropdown label="Select one" data={data} onSelect={setSelectedFrom} />
+          <Dropdown
+            label="Select from"
+            data={data}
+            onSelect={setSelectedFrom}
+          />
         </View>
 
         <View style={[styles.column]}>
           <Text style={styles.label}>To:</Text>
-          <Dropdown label="Select one" data={data} onSelect={setSelectedTo} />
+          <Dropdown label="Select to" data={data} onSelect={setSelectedTo} />
         </View>
       </View>
       <Separator />
