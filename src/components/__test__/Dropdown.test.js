@@ -36,3 +36,12 @@ describe('Dropdown component', () => {
     expect(screen.queryAllByText('bar').length).toBe(0);
   });
 });
+
+describe('Snapshot', () => {
+  it('renders okay', async () => {
+    render(<Dropdown label="Test" data={[]} onSelect={jest.fn} />);
+
+    const snapshot = screen.toJSON();
+    expect(snapshot).toMatchSnapshot();
+  });
+});
