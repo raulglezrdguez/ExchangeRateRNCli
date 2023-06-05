@@ -135,6 +135,7 @@ const Exchange = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Exchange</Text>
       <TextInput
+        testID="amount"
         style={styles.inputAmount}
         onChangeText={val => setAmount(val)}
         value={amount}

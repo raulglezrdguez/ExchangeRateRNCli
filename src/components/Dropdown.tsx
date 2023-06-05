@@ -39,7 +39,10 @@ const Dropdown: FC<Props> = ({label, data, onSelect}) => {
 
   const renderItem = ({item}: {item: KeyValue}) => {
     return (
-      <TouchableOpacity style={styles.item} onPress={() => onItemPress(item)}>
+      <TouchableOpacity
+        testID={`dropdown_item_${item.key}`}
+        style={styles.item}
+        onPress={() => onItemPress(item)}>
         <Text>{item.value}</Text>
       </TouchableOpacity>
     );
@@ -72,6 +75,7 @@ const Dropdown: FC<Props> = ({label, data, onSelect}) => {
 
   return (
     <TouchableOpacity
+      testID={`dropdown_${label}`}
       ref={DropdownButton}
       style={styles.button}
       onPress={toggleDropdown}>
