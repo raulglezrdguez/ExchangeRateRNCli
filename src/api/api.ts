@@ -1,6 +1,6 @@
 const API_KEY = 'db8423abf221064f5510359bb6c10120';
-// const BASE_URL = 'http://api.exchangeratesapi.io/v1';
-const BASE_URL = 'http://10.0.2.2:3000';
+const BASE_URL = 'http://api.exchangeratesapi.io/v1';
+// const BASE_URL = 'http://10.0.2.2:3000';
 // const BASE_URL = 'http://127.0.0.1:3000';
 
 export type Symbols = {
