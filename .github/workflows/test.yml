@@ -1,0 +1,31 @@
+name: Android build
+
+on: workflow_dispatch
+
+jobs:
+  android-build:
+    name: Android build
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: checkout github repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: setup jdk environment
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: setup node environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.12.1'
+
+      - name: install dependencies
+        run: npm install --no-audit --no-fund --no-optional
+
+      - name: run tests
+        run: npm run test
