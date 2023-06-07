@@ -1,3 +1,5 @@
+/* global device element by */
+
 describe('Exchange screen', () => {
   beforeAll(async () => {
     await device.launchApp();
